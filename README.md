@@ -18,3 +18,6 @@ A interface permite pesquisar profissionais por profissão e localização. Os d
 utilizados são apenas exemplos fictícios para demonstração. Os exemplos agora
 estão reunidos no arquivo `dados.py`, totalizando mais de 100 registros para
 facilitar testes.
+
+É possível definir a porcentagem mínima de similaridade utilizada nos filtros
+"soft" por meio do campo **Similaridade (%)** da interface.
