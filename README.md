@@ -15,4 +15,6 @@ python gui.py
 ```
 
 A interface permite pesquisar profissionais por profissão e localização. Os dados
-utilizados são apenas exemplos fictícios para demonstração.
+utilizados são apenas exemplos fictícios para demonstração. Os exemplos agora
+estão reunidos no arquivo `dados.py`, totalizando mais de 100 registros para
+facilitar testes.
