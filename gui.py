@@ -338,6 +338,11 @@ def criar_interface():
     )
     botao.grid(column=0, row=12, columnspan=3, pady=5)
 
+    def _enter(event):
+        botao.invoke()
+
+    root.bind("<Return>", _enter)
+
     root.mainloop()
 
 
