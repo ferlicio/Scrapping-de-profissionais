@@ -194,3 +194,4 @@ cython_debug/
 .cursorindexingignore
 # Excel files
 *.xls
+*.xlsx
