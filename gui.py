@@ -2,61 +2,8 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from difflib import SequenceMatcher
 
-# Dados de exemplo para demonstracao com informacoes adicionais
-PROFISSIONAIS = [
-    {
-        "nome": "Fulano",
-        "titulo": "Desenvolvedor Python",
-        "pais": "Brasil",
-        "estado": "SP",
-        "cidade": "Sao Paulo",
-        "setor": "Tecnologia",
-        "senioridade": "Sênior",
-        "skills": ["Python", "Django", "AWS"],
-        "empresa": "Empresa X",
-        "formacao": "Bacharelado",
-        "certificacoes": ["AWS"],
-    },
-    {
-        "nome": "Beltrano",
-        "titulo": "Product Manager",
-        "pais": "Brasil",
-        "estado": "RJ",
-        "cidade": "Rio de Janeiro",
-        "setor": "Tecnologia",
-        "senioridade": "Pleno",
-        "skills": ["Agile", "Scrum"],
-        "empresa": "Empresa Y",
-        "formacao": "MBA",
-        "certificacoes": ["PMP"],
-    },
-    {
-        "nome": "Sicrano",
-        "titulo": "Advogado",
-        "pais": "Brasil",
-        "estado": "MG",
-        "cidade": "Belo Horizonte",
-        "setor": "Jurídico",
-        "senioridade": "Sênior",
-        "skills": ["Direito", "Contratos"],
-        "empresa": "Escritorio Z",
-        "formacao": "Mestrado",
-        "certificacoes": [],
-    },
-    {
-        "nome": "Maria",
-        "titulo": "Engenheira de Software",
-        "pais": "Brasil",
-        "estado": "MG",
-        "cidade": "Belo Horizonte",
-        "setor": "Tecnologia",
-        "senioridade": "Júnior",
-        "skills": ["Python", "UX"],
-        "empresa": "Empresa K",
-        "formacao": "Bacharelado",
-        "certificacoes": [],
-    },
-]
+# Dados de exemplo movidos para arquivo separado
+from dados import PROFISSIONAIS
 
 
 def _parse_lista(valor: str):
