@@ -54,7 +54,7 @@ def buscar_profissionais(
                     continue
             else:
                 r = 1.0 if _contido(titulo, p["titulo"]) else _similaridade(titulo, p["titulo"])
-                if r < 0.8:
+                if r < 0.9:
                     continue
                 score += r
                 soft += 1
@@ -65,7 +65,7 @@ def buscar_profissionais(
                     continue
             else:
                 r = 1.0 if _contido(pais, p["pais"]) else _similaridade(pais, p["pais"])
-                if r < 0.8:
+                if r < 0.9:
                     continue
                 score += r
                 soft += 1
@@ -76,7 +76,7 @@ def buscar_profissionais(
                     continue
             else:
                 r = 1.0 if _contido(estado, p["estado"]) else _similaridade(estado, p["estado"])
-                if r < 0.8:
+                if r < 0.9:
                     continue
                 score += r
                 soft += 1
@@ -87,7 +87,7 @@ def buscar_profissionais(
                     continue
             else:
                 r = 1.0 if _contido(cidade, p["cidade"]) else _similaridade(cidade, p["cidade"])
-                if r < 0.8:
+                if r < 0.9:
                     continue
                 score += r
                 soft += 1
@@ -98,7 +98,7 @@ def buscar_profissionais(
                     continue
             else:
                 r = 1.0 if _contido(setor, p["setor"]) else _similaridade(setor, p["setor"])
-                if r < 0.8:
+                if r < 0.9:
                     continue
                 score += r
                 soft += 1
@@ -120,7 +120,7 @@ def buscar_profissionais(
                     continue
             else:
                 r = 1.0 if _contido(empresa, p["empresa"]) else _similaridade(empresa, p["empresa"])
-                if r < 0.8:
+                if r < 0.9:
                     continue
                 score += r
                 soft += 1
@@ -131,7 +131,7 @@ def buscar_profissionais(
                     continue
             else:
                 r = 1.0 if _contido(formacao, p["formacao"]) else _similaridade(formacao, p["formacao"])
-                if r < 0.8:
+                if r < 0.9:
                     continue
                 score += r
                 soft += 1
@@ -143,7 +143,7 @@ def buscar_profissionais(
             else:
                 found = sum(1 for c in certificacoes if c.lower() in map(str.lower, p["certificacoes"]))
                 r = found / len(certificacoes)
-                if r < 0.8:
+                if r < 0.9:
                     continue
                 score += r
                 soft += 1
@@ -155,7 +155,7 @@ def buscar_profissionais(
             else:
                 matches = sum(1 for k in palavras if any(k.lower() in skill.lower() for skill in p["skills"]))
                 r = matches / len(palavras)
-                if r < 0.8:
+                if r < 0.9:
                     continue
                 score += r
                 soft += 1
