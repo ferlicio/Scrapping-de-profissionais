@@ -233,13 +233,14 @@ def exibir_resultados(resultados, lista):
         ))
 
 
-def pesquisar(campos, lista, senior_vars, hard_vars):
+def pesquisar(campos, lista, hard_vars):
     titulo = campos["titulo"].get()
     pais = campos["pais"].get()
     estado = campos["estado"].get()
     cidade = campos["cidade"].get()
     setor = campos["setor"].get()
-    senioridades = [nivel for nivel, var in senior_vars.items() if var.get()]
+    senioridade = campos["senioridade"].get()
+    senioridades = [senioridade] if senioridade else []
     palavras = _parse_lista(campos["palavras"].get())
     excluir = _parse_lista(campos["excluir"].get())
     empresa = campos["empresa"].get()
@@ -302,17 +303,14 @@ def criar_interface():
     hard_vars["setor"] = tk.BooleanVar(value=True)
     ttk.Checkbutton(frm, text="Hard", variable=hard_vars["setor"]).grid(column=2, row=4, sticky="w")
 
-    ttk.Label(frm, text="Nível de Senioridade:").grid(column=0, row=5, sticky="nw")
-    senior_frame = ttk.Frame(frm)
-    senior_frame.grid(column=1, row=5, padx=5, pady=2, sticky="w")
-    opcoes = ["Estágio", "Júnior", "Pleno", "Sênior", "Lead", "Especialista"]
-    senior_vars = {}
-    for i, opcao in enumerate(opcoes):
-        var = tk.BooleanVar()
-        ttk.Checkbutton(senior_frame, text=opcao, variable=var).grid(column=i % 3, row=i // 3, sticky="w")
-        senior_vars[opcao] = var
+    ttk.Label(frm, text="Nível de Senioridade:").grid(column=0, row=5, sticky="w")
+    campos["senioridade"] = ttk.Combobox(
+        frm,
+        values=["", "Estágio", "Júnior", "Pleno", "Sênior", "Lead", "Especialista"],
+    )
+    campos["senioridade"].grid(column=1, row=5, padx=5, pady=2, sticky="w")
     hard_vars["senioridade"] = tk.BooleanVar(value=True)
-    ttk.Checkbutton(frm, text="Hard", variable=hard_vars["senioridade"]).grid(column=2, row=5, sticky="nw")
+    ttk.Checkbutton(frm, text="Hard", variable=hard_vars["senioridade"]).grid(column=2, row=5, sticky="w")
 
     ttk.Label(frm, text="Palavras-chave extras:").grid(column=0, row=6, sticky="w")
     campos["palavras"] = ttk.Entry(frm)
@@ -353,7 +351,7 @@ def criar_interface():
     botao = ttk.Button(
         frm,
         text="Buscar",
-        command=lambda: pesquisar(campos, lista, senior_vars, hard_vars),
+        command=lambda: pesquisar(campos, lista, hard_vars),
     )
     botao.grid(column=0, row=12, columnspan=3, pady=5)
 
