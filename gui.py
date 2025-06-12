@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 
 # Dados de exemplo para demonstracao
 PROFISSIONAIS = [
@@ -23,6 +23,12 @@ def buscar_profissionais(profissao: str, localizacao: str):
 
 def exibir_resultados(resultados, lista):
     lista.delete(*lista.get_children())
+    if not resultados:
+        messagebox.showinfo(
+            "Profissionais não encontrados",
+            "Nenhum profissional foi encontrado com os parâmetros informados.",
+        )
+        return
     for profissional in resultados:
         lista.insert("", tk.END, values=(
             profissional["nome"],
