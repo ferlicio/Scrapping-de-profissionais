@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from difflib import SequenceMatcher
+import unicodedata
 
 # Dados de exemplo movidos para arquivo separado
 from dados import PROFISSIONAIS
@@ -11,9 +12,20 @@ def _parse_lista(valor: str):
     return [v.strip() for v in valor.split(',') if v.strip()]
 
 
+def _normalizar(texto: str) -> str:
+    """Remove acentuação e converte para minúsculas."""
+    nfkd = unicodedata.normalize("NFKD", texto)
+    return "".join(c for c in nfkd if not unicodedata.combining(c)).lower()
+
+
 def _similaridade(a: str, b: str) -> float:
-    """Retorna a similaridade entre duas strings (0 a 1)."""
-    return SequenceMatcher(None, a.lower(), b.lower()).ratio()
+    """Retorna a similaridade entre duas strings (0 a 1), ignorando acentos."""
+    return SequenceMatcher(None, _normalizar(a), _normalizar(b)).ratio()
+
+
+def _contido(a: str, b: str) -> bool:
+    """Verifica se a string normalizada 'a' ocorre dentro de 'b'."""
+    return _normalizar(a) in _normalizar(b)
 
 
 def buscar_profissionais(
@@ -38,55 +50,55 @@ def buscar_profissionais(
 
         if titulo:
             if hard_flags.get("titulo"):
-                if titulo.lower() not in p["titulo"].lower():
+                if not _contido(titulo, p["titulo"]):
                     continue
             else:
-                r = _similaridade(titulo, p["titulo"])
-                if r == 0:
+                r = 1.0 if _contido(titulo, p["titulo"]) else _similaridade(titulo, p["titulo"])
+                if r < 0.9:
                     continue
                 score += r
                 soft += 1
 
         if pais:
             if hard_flags.get("pais"):
-                if pais.lower() not in p["pais"].lower():
+                if not _contido(pais, p["pais"]):
                     continue
             else:
-                r = _similaridade(pais, p["pais"])
-                if r == 0:
+                r = 1.0 if _contido(pais, p["pais"]) else _similaridade(pais, p["pais"])
+                if r < 0.9:
                     continue
                 score += r
                 soft += 1
 
         if estado:
             if hard_flags.get("estado"):
-                if estado.lower() not in p["estado"].lower():
+                if not _contido(estado, p["estado"]):
                     continue
             else:
-                r = _similaridade(estado, p["estado"])
-                if r == 0:
+                r = 1.0 if _contido(estado, p["estado"]) else _similaridade(estado, p["estado"])
+                if r < 0.9:
                     continue
                 score += r
                 soft += 1
 
         if cidade:
             if hard_flags.get("cidade"):
-                if cidade.lower() not in p["cidade"].lower():
+                if not _contido(cidade, p["cidade"]):
                     continue
             else:
-                r = _similaridade(cidade, p["cidade"])
-                if r == 0:
+                r = 1.0 if _contido(cidade, p["cidade"]) else _similaridade(cidade, p["cidade"])
+                if r < 0.9:
                     continue
                 score += r
                 soft += 1
 
         if setor:
             if hard_flags.get("setor"):
-                if setor != p["setor"]:
+                if _normalizar(setor) != _normalizar(p["setor"]):
                     continue
             else:
-                r = _similaridade(setor, p["setor"])
-                if r == 0:
+                r = 1.0 if _contido(setor, p["setor"]) else _similaridade(setor, p["setor"])
+                if r < 0.9:
                     continue
                 score += r
                 soft += 1
@@ -104,22 +116,22 @@ def buscar_profissionais(
 
         if empresa:
             if hard_flags.get("empresa"):
-                if empresa.lower() not in p["empresa"].lower():
+                if not _contido(empresa, p["empresa"]):
                     continue
             else:
-                r = _similaridade(empresa, p["empresa"])
-                if r == 0:
+                r = 1.0 if _contido(empresa, p["empresa"]) else _similaridade(empresa, p["empresa"])
+                if r < 0.9:
                     continue
                 score += r
                 soft += 1
 
         if formacao:
             if hard_flags.get("formacao"):
-                if formacao.lower() not in p["formacao"].lower():
+                if not _contido(formacao, p["formacao"]):
                     continue
             else:
-                r = _similaridade(formacao, p["formacao"])
-                if r == 0:
+                r = 1.0 if _contido(formacao, p["formacao"]) else _similaridade(formacao, p["formacao"])
+                if r < 0.9:
                     continue
                 score += r
                 soft += 1
@@ -131,7 +143,7 @@ def buscar_profissionais(
             else:
                 found = sum(1 for c in certificacoes if c.lower() in map(str.lower, p["certificacoes"]))
                 r = found / len(certificacoes)
-                if r == 0:
+                if r < 0.9:
                     continue
                 score += r
                 soft += 1
@@ -143,7 +155,7 @@ def buscar_profissionais(
             else:
                 matches = sum(1 for k in palavras if any(k.lower() in skill.lower() for skill in p["skills"]))
                 r = matches / len(palavras)
-                if r == 0:
+                if r < 0.9:
                     continue
                 score += r
                 soft += 1
@@ -192,6 +204,7 @@ def pesquisar(campos, lista, senior_vars, hard_vars):
     empresa = campos["empresa"].get()
     formacao = campos["formacao"].get()
     certs = _parse_lista(campos["certificacoes"].get())
+    hard_flags = {k: v.get() if hasattr(v, "get") else bool(v) for k, v in hard_vars.items()}
     resultados = buscar_profissionais(
         titulo,
         pais,
@@ -204,7 +217,7 @@ def pesquisar(campos, lista, senior_vars, hard_vars):
         empresa,
         formacao,
         certs,
-        hard_vars,
+        hard_flags,
     )
     exibir_resultados(resultados, lista)
 
