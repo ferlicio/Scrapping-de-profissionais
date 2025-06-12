@@ -41,8 +41,15 @@ def buscar_profissionais(
     formacao: str,
     certificacoes,
     hard_flags,
+    similaridade_minima: float = 0.9,
 ):
-    """Filtra e rankeia os profissionais conforme os filtros informados."""
+    """Filtra e rankeia os profissionais conforme os filtros informados.
+
+    Parameters
+    ----------
+    similaridade_minima: float, optional
+        Valor mínimo de similaridade (0 a 1) exigido nos filtros soft.
+    """
     resultados = []
     for p in PROFISSIONAIS:
         score = 0
@@ -54,7 +61,7 @@ def buscar_profissionais(
                     continue
             else:
                 r = 1.0 if _contido(titulo, p["titulo"]) else _similaridade(titulo, p["titulo"])
-                if r < 0.9:
+                if r < similaridade_minima:
                     continue
                 score += r
                 soft += 1
@@ -65,7 +72,7 @@ def buscar_profissionais(
                     continue
             else:
                 r = 1.0 if _contido(pais, p["pais"]) else _similaridade(pais, p["pais"])
-                if r < 0.9:
+                if r < similaridade_minima:
                     continue
                 score += r
                 soft += 1
@@ -76,7 +83,7 @@ def buscar_profissionais(
                     continue
             else:
                 r = 1.0 if _contido(estado, p["estado"]) else _similaridade(estado, p["estado"])
-                if r < 0.9:
+                if r < similaridade_minima:
                     continue
                 score += r
                 soft += 1
@@ -87,7 +94,7 @@ def buscar_profissionais(
                     continue
             else:
                 r = 1.0 if _contido(cidade, p["cidade"]) else _similaridade(cidade, p["cidade"])
-                if r < 0.9:
+                if r < similaridade_minima:
                     continue
                 score += r
                 soft += 1
@@ -98,7 +105,7 @@ def buscar_profissionais(
                     continue
             else:
                 r = 1.0 if _contido(setor, p["setor"]) else _similaridade(setor, p["setor"])
-                if r < 0.9:
+                if r < similaridade_minima:
                     continue
                 score += r
                 soft += 1
@@ -109,7 +116,7 @@ def buscar_profissionais(
                     continue
             else:
                 r = 1.0 if p["senioridade"].lower() in [s.lower() for s in senioridades] else 0
-                if r == 0:
+                if r < similaridade_minima:
                     continue
                 score += r
                 soft += 1
@@ -120,7 +127,7 @@ def buscar_profissionais(
                     continue
             else:
                 r = 1.0 if _contido(empresa, p["empresa"]) else _similaridade(empresa, p["empresa"])
-                if r < 0.9:
+                if r < similaridade_minima:
                     continue
                 score += r
                 soft += 1
@@ -131,7 +138,7 @@ def buscar_profissionais(
                     continue
             else:
                 r = 1.0 if _contido(formacao, p["formacao"]) else _similaridade(formacao, p["formacao"])
-                if r < 0.9:
+                if r < similaridade_minima:
                     continue
                 score += r
                 soft += 1
@@ -143,7 +150,7 @@ def buscar_profissionais(
             else:
                 found = sum(1 for c in certificacoes if c.lower() in map(str.lower, p["certificacoes"]))
                 r = found / len(certificacoes)
-                if r < 0.9:
+                if r < similaridade_minima:
                     continue
                 score += r
                 soft += 1
@@ -155,7 +162,7 @@ def buscar_profissionais(
             else:
                 matches = sum(1 for k in palavras if any(k.lower() in skill.lower() for skill in p["skills"]))
                 r = matches / len(palavras)
-                if r < 0.9:
+                if r < similaridade_minima:
                     continue
                 score += r
                 soft += 1
@@ -204,6 +211,10 @@ def pesquisar(campos, lista, senior_vars, hard_vars):
     empresa = campos["empresa"].get()
     formacao = campos["formacao"].get()
     certs = _parse_lista(campos["certificacoes"].get())
+    try:
+        simil = float(campos["similaridade"].get()) / 100.0
+    except (ValueError, ZeroDivisionError):
+        simil = 0.9
     hard_flags = {k: v.get() if hasattr(v, "get") else bool(v) for k, v in hard_vars.items()}
     resultados = buscar_profissionais(
         titulo,
@@ -218,6 +229,7 @@ def pesquisar(campos, lista, senior_vars, hard_vars):
         formacao,
         certs,
         hard_flags,
+        simil,
     )
     exibir_resultados(resultados, lista)
 
@@ -303,6 +315,15 @@ def criar_interface():
     campos["certificacoes"].grid(column=1, row=10, padx=5, pady=2)
     hard_vars["certificacoes"] = tk.BooleanVar(value=True)
     ttk.Checkbutton(frm, text="Hard", variable=hard_vars["certificacoes"]).grid(column=2, row=10, sticky="w")
+
+    def _validar_numero(texto: str) -> bool:
+        return texto.isdigit() or texto == ""
+
+    ttk.Label(frm, text="Similaridade (%):").grid(column=0, row=11, sticky="w")
+    vcmd = (root.register(_validar_numero), "%P")
+    campos["similaridade"] = ttk.Entry(frm, validate="key", validatecommand=vcmd)
+    campos["similaridade"].insert(0, "90")
+    campos["similaridade"].grid(column=1, row=11, padx=5, pady=2)
 
     cols = ("Nome", "Título", "Local")
     lista = ttk.Treeview(frm, columns=cols, show="headings")
